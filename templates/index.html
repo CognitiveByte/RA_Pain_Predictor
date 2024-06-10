@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RA Pain Predictor</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='styles.css') }}"
+    />
+  </head>
+  <body>
+    <h1>Rheumatoid Arthritis Pain Predictor</h1>
+    <form id="predict-form">
+      <label for="location">Enter your location:</label>
+      <input type="text" id="location" name="location" required />
+      <button type="submit">Predict Pain Level</button>
+    </form>
+    <div id="result"></div>
+    <script>
+      document
+        .getElementById("predict-form")
+        .addEventListener("submit", async function (event) {
+          event.preventDefault();
+          const location = document.getElementById("location").value;
+          const response = await fetch("/predict", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ location: location }),
+          });
+          const data = await response.json();
+          document.getElementById("result").innerHTML = `
+                <h2>Predicted Pain Level: ${data.pain_level_prediction}</h2>
+                <h3>Current Weather Conditions:</h3>
+                <p>Temperature: ${data.current_conditions.temp_c} °C</p>
+                <p>Humidity: ${data.current_conditions.humidity} %</p>
+                <p>Pressure: ${data.current_conditions.pressure_mb} mb</p>
+            `;
+        });
+    </script>
+  </body>
+</html>
